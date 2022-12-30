@@ -4,7 +4,7 @@ import os
 import torch
 import numpy as np
 import pickle
-import ipdb
+# import ipdb
 from sklearn.neighbors import KDTree
 import open3d as o3d
 import timeit
@@ -333,7 +333,7 @@ def nicp():
     points_two = frame_two["points"].numpy()
     start = timeit.default_timer()
     nicp = NICP(frame_one,frame_two,max_iterator=200)
-    points_one,points_two,W = nicp.precess_torch(down_sample=4096*3)
+    points_one,points_two,W = nicp.precess_torch(down_sample=4096*3)  # 即12288的来源
     print(f"##### nicp time [{(timeit.default_timer() - start)*1000}] ms")
     
 
