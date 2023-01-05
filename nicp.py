@@ -14,10 +14,12 @@ class NICP():
     def __init__(self,frame_one,frame_two,max_iterator = 5,lr = 0.001,device = "cuda:0",tolerance = 5) -> None:
        
         self.device = device
-        self.points_one = frame_one["points"].numpy()
-        self.points_two = frame_two["points"].numpy()
-        self.color_one = frame_one["color"]
-        self.color_two = frame_two["color"]
+        # self.points_one = frame_one["points"].numpy()
+        # self.points_two = frame_two["points"].numpy()
+        self.points_one = frame_one
+        self.points_two = frame_two
+        # self.color_one = frame_one["color"]
+        # self.color_two = frame_two["color"]
         self.max_iterator = max_iterator
         self.lr = lr
         self.tolerance = tolerance
@@ -322,17 +324,35 @@ def nicp_v2():
         pickle.dump(points_write,file)
 
 def nicp():
-    root_path = os.path.join("./data")
-    with open(os.path.join(root_path,"00000_D2986_C2932.pkl"),'rb') as file:
-        frame_one = pickle.load(file)
+    # root_path = os.path.join("./data")
+    # with open(os.path.join(root_path,"00000_D2986_C2932.pkl"),'rb') as file:
+    #     frame_one = pickle.load(file)
 
-    with open(os.path.join(root_path,"00050_D3036_C2982.pkl"),'rb') as file:
-        frame_two = pickle.load(file)
-    print(f"load pkl file and pkl file keys {frame_one.keys()}")
-    points_one = frame_one["points"].numpy()
-    points_two = frame_two["points"].numpy()
+    # with open(os.path.join(root_path,"00050_D3036_C2982.pkl"),'rb') as file:
+    #     frame_two = pickle.load(file)
+    dirname = os.path.dirname(__file__)
+
+    filename_pcd_us = os.path.join(dirname, 'data/pointcloud_us_final.ply')
+    frame_one_raw = o3d.io.read_point_cloud(filename_pcd_us)
+    frame_one = o3d.geometry.PointCloud()
+    frame_one.points = o3d.utility.Vector3dVector(np.array(frame_one_raw.points)) 
+    
+    filename_pcd_ct = os.path.join(dirname, 'data/surface.ply')
+    frame_two_raw = o3d.io.read_point_cloud(filename_pcd_ct)
+    frame_two = o3d.geometry.PointCloud()
+    frame_two.points = o3d.utility.Vector3dVector(np.array(frame_two_raw.points)) 
+
+
+    # print(f"load pkl file and pkl file keys {frame_one.keys()}")
+
+    # points_one = frame_one["points"].numpy()
+    # points_two = frame_two["points"].numpy()
+    points_one = np.asarray(frame_one.points)
+    points_two = np.asarray(frame_two.points)
+
+
     start = timeit.default_timer()
-    nicp = NICP(frame_one,frame_two,max_iterator=200)
+    nicp = NICP(points_one,points_two,max_iterator=200)
     points_one,points_two,W = nicp.precess_torch(down_sample=4096*3)  # 即12288的来源
     print(f"##### nicp time [{(timeit.default_timer() - start)*1000}] ms")
     

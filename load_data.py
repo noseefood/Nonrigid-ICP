@@ -11,7 +11,6 @@ with open(os.path.join(root,"points_two.pkl"),'rb') as file:
     frame_two = pickle.load(file)
 
 
-
 def draw_points():
     points_one = frame_one["transform_points"]
     origin_points = frame_one["points"]
