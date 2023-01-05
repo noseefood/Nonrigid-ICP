@@ -291,7 +291,9 @@ def nicp_v2():
     points_one = frame_one["points"].numpy()
     points_two = frame_two["points"].numpy()
     nicp = NICP(frame_one,frame_two)
-    points_one,color_one,points_two,color_two,W = nicp.precess_with_color(down_sample=4096)
+
+    # points_one,color_one,points_two,color_two,W = nicp.precess_with_color(down_sample=4096)
+
     # n * 3 W = 4n * 3
     one = np.ones((points_one.shape[0],1))
     temp_points = np.hstack((points_one,one))
@@ -313,14 +315,14 @@ def nicp_v2():
     with open("./output/points_one.pkl",'wb') as file:
         points_write = {}
         points_write["points"] = points_one
-        points_write["color"] = color_one
+        # points_write["color"] = color_one
         points_write["transform_points"] = new_points_list
         pickle.dump(points_write,file)
 
     with open("./output/points_two.pkl",'wb') as file:
         points_write = {}
         points_write["points"] = points_two
-        points_write["color"] = color_two
+        # points_write["color"] = color_two
         pickle.dump(points_write,file)
 
 def nicp():
@@ -353,7 +355,8 @@ def nicp():
 
     start = timeit.default_timer()
     nicp = NICP(points_one,points_two,max_iterator=200)
-    points_one,points_two,W = nicp.precess_torch(down_sample=4096*3)  # 即12288的来源
+    # points_one,points_two,W = nicp.precess_torch(down_sample=4096*3)  # 即12288的来源
+    points_one,points_two,W = nicp.precess_torch(down_sample=4096) 
     print(f"##### nicp time [{(timeit.default_timer() - start)*1000}] ms")
     
 
